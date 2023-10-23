@@ -38,6 +38,10 @@ class MetropolisHastings:
                 "initial sample must be numpy array or list"
 
 class SingleChainMetropolisHastings:
+    """
+    Generalized single chain MCMC metropolis hastings code that allows for use
+    of adaptive proposal.
+    """
 
     def __init__(self, density, proposal):
 
@@ -68,5 +72,7 @@ class SingleChainMetropolisHastings:
 
     def _check_args(self, x):
 
-        assert(isinstance(x, float) or isinstance(x, int)),\
-                "initial sample must be float or int"
+        assert(isinstance(x, float) or \
+                isinstance(x, int)) or \
+                isinstance(x, np.ndarray),\
+                "initial sample must be float, int, or npndarray"

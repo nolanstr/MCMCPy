@@ -3,7 +3,7 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 
 from mcmcpy.samplers.metropolis_hastings import SingleChainMetropolisHastings
-from mcmcpy.proposals.Normal import Normal
+from mcmcpy.proposals.normal import Normal
 
 if __name__ == "__main__":
 
