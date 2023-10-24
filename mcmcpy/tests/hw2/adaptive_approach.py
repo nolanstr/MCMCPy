@@ -8,7 +8,7 @@ from mcmcpy.proposals.normal import AdaptiveNormal
 if __name__ == "__main__":
 
     # Initialize first sample and mean and covariance of proposal distribution
-    x = np.array([0,0])
+    x = mvn(mean=np.zeros(2), cov=np.eye(2)).rvs(1)
     
     mu1 = np.zeros(2)
     cov1 = np.eye(2)
@@ -22,8 +22,9 @@ if __name__ == "__main__":
     dist2 = mvn(mean=mu2, cov=cov2)
 
     density = lambda X: (2/3) * dist1.pdf(X) + (1/3)*dist2.pdf(X)
-    proposal = AdaptiveNormal(var=1)
+    proposal = AdaptiveNormal(var=np.eye(x.shape[0]))
     SMH = SingleChainMetropolisHastings(density, proposal)
+    import pdb;pdb.set_trace()
     SMH.sample(x, steps=10000)
     print(f"Accepted Rate: {SMH.chain.accepted_state_count/SMH.steps}")    
     t = np.arange(SMH.steps)
@@ -47,4 +48,38 @@ if __name__ == "__main__":
      
     ess = SMH.chain.estimate_effective_sample_size()
 
+    fig, ax = plt.subplots()
+    ax.set_xlabel(r"$x$")
+    ax.set_ylabel(r"$y$")
+    ax.scatter(SMH.chain.rejected_states[:,0], 
+               SMH.chain.rejected_states[:,1], 
+               color="r", alpha=0.3, label="rejected")
+    ax.scatter(SMH.chain.accepted_states[:,0], 
+               SMH.chain.accepted_states[:,1], 
+               color="b", alpha=0.3, label="accepted")
+    ax.legend()
+    plt.show()
+
+    fig, ax = plt.subplots() 
+    x = np.linspace(-8,9,1000)
+    y = np.linspace(-10,10,1000)
+    X, Y = np.meshgrid(x, y)
+    probs = density(np.hstack((X.reshape((-1,1)),
+                             Y.reshape((-1,1))))).reshape(X.shape)
+    ax.contourf(X, Y, probs)
+    ax.scatter(SMH.chain.rejected_states[:,0], 
+               SMH.chain.rejected_states[:,1], 
+               color="k", alpha=0.1, label="Samples")
+    ax.legend()
+    plt.show()
+
+    fig, axs = plt.subplots(2)
+    t = np.arange(SMH.chain.chain_correlations.shape[0])
+    axs[0].plot(t, SMH.chain.chain_correlations[:,0])
+    axs[1].plot(t, SMH.chain.chain_correlations[:,1])
+    axs[0].set_xlabel("lag")
+    axs[1].set_xlabel("lag")
+    axs[0].set_ylabel(r"$\rho_{t}$")
+    axs[1].set_ylabel(r"$\rho_{t}$")
+    plt.show()
     import pdb;pdb.set_trace()

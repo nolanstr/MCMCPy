@@ -46,9 +46,10 @@ class Chain:
         self.chain_correlations = []
         for i in range(self.accepted_states.shape[1]):
             self.chain_correlations.append(np.correlate(
-                                                self.accepted_states[:,i],
-                                                self.accepted_states[:,i], 
-                                                mode="full"))
+                                            self.accepted_states[:,i],
+                                            self.accepted_states[:,i].T,
+                                            mode="full")
+                                        [self.accepted_states.shape[0]:])
         self.chain_correlations = np.array(self.chain_correlations).T
         #maybe use scipy signal correlation function
         return self.chain_correlations
@@ -56,7 +57,6 @@ class Chain:
     def estimate_effective_sample_size(self, burn_in=0):
         n = self.accepted_state_count
         self.compute_chain_correlations()
-        import pdb;pdb.set_trace()
         self.ess = n / (1 + (2*np.sum(self.chain_correlations, axis=0)/n))
         return self.ess
 
