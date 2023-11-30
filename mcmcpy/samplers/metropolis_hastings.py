@@ -15,6 +15,7 @@ class MetropolisHastings:
         self.chains = MultipleChains(x)
         self.number_of_chains = self.chains.number_of_chains
         self.steps = steps+1
+
         for step in range(steps):
             for chain in self.chains:
                 self.perform_step(chain) 

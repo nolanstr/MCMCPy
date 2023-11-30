@@ -75,10 +75,7 @@ class MultipleChains:
 
         assert(isinstance(xs, np.ndarray) or isinstance(xs, list),
                 "Initial samples must be numpy array or list")
-        if isinstance(xs, np.ndarray):
-            return xs.flatten()
-        else:
-            return xs
+        return xs
     
     def estimate_effective_sample_size(self):
         M = self.number_of_chains
