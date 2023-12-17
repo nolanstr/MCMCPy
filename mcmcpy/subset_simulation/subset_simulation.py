@@ -22,6 +22,7 @@ class SubsetSimulation:
         scores = self.performance_function(initial_samples)
         x_i = initial_samples[np.argsort(scores)[:self.N_c],:]
         retained_samples = [x_i.copy()]
+        captured_failure_events = 0
 
         for i in range(number_of_failure_events):
             self.quantile_value = np.max(self.performance_function(x_i))
@@ -33,13 +34,13 @@ class SubsetSimulation:
             scores = self.performance_function(x_0)
             x_i = x_0[np.argsort(scores)[:self.N_c],:]
             retained_samples.append(x_i.copy())
-            final_prob = np.sum(scores<0)/scores.shape[0]
+            final_prob = np.sum(scores<=0)/scores.shape[0]
             if final_prob>self.target_cond_prob: 
-                number_of_failure_events = i+1
+                captured_failure_events = i+1
                 break
         
         failure_prob = np.power(self.target_cond_prob, 
-                    number_of_failure_events) * final_prob
+                    captured_failure_events) * final_prob
 
         return failure_prob, initial_samples, retained_samples
 
